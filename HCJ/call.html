@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手写call</title>
+  </head>
+  <body>
+    <!-- 手写call -->
+    <script>
+      // "use strict";
+      Function.prototype.myCall = function () {
+        const len = arguments.length;
+        const sourceFn = this;
+
+        if (len === 0) return sourceFn();
+
+        const isStrict = !(function () {
+          return this === window;
+        })();
+
+        let target = arguments[0];
+        const args = Array.prototype.slice.call(arguments, 1);
+
+        if (isStrict) {
+          //
+        } else {
+          if (target === null || target === undefined) {
+            target = (function () {
+              return this;
+            })();
+          }
+          switch (typeof target) {
+            case "number":
+              target = new Number(target);
+              break;
+            case "string":
+              target = new String(target);
+              break;
+            case "boolean":
+              target = new Boolean(target);
+              break;
+          }
+          target.constructor;
+        }
+
+        const flag = Symbol();
+        target[flag] = sourceFn;
+        target[flag](args);
+      };
+
+      function fn() {
+        console.log(this, arguments);
+      }
+      var a = { a: 1, b: 2, c: 3 };
+
+      fn.myCall(a, 1, 2, 3);
+    </script>
+
+    <!-- 一些例子 -->
+    <script>
+      "use strict";
+      function testFn() {
+        console.log(this, arguments, "testFn");
+      }
+      testFn();
+      testFn.call(null, "null");
+      testFn.call(1, "1");
+    </script>
+  </body>
+</html>
